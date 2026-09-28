@@ -1,19 +1,35 @@
-// 配置加载：读取根目录 config.yaml，合并默认值，环境变量可覆盖。
-// 优先级：环境变量 > config.yaml > 内置默认值。
+// 配置加载：def_config/config.yaml 为出厂默认，config/config.yaml 为本机覆盖，
+// 二者深合并后再让环境变量覆盖。
+// 优先级：环境变量 > config/config.yaml > def_config/config.yaml > 内置兜底默认值。
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CONFIG_FILE = path.join(__dirname, 'config.yaml');
+const DEF_FILE = path.join(__dirname, 'def_config', 'config.yaml');   // 默认值，勿改
+const USER_FILE = path.join(__dirname, 'config', 'config.yaml');      // 本机覆盖，gitignore
 
-let y = {};
-try {
-  y = YAML.parse(fs.readFileSync(CONFIG_FILE, 'utf8')) || {};
-} catch (e) {
-  console.warn('[config] 读取 config.yaml 失败，改用默认配置：', e.message);
+function readYaml(file, warnIfMissing) {
+  try {
+    return YAML.parse(fs.readFileSync(file, 'utf8')) || {};
+  } catch (e) {
+    if (warnIfMissing) console.warn('[config] 读取', path.relative(__dirname, file), '失败，忽略：', e.message);
+    return {};
+  }
 }
+
+// 深合并：user 覆盖 def；仅对「纯对象」递归，其余（含数组）直接覆盖。
+const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+function deepMerge(base, over) {
+  const out = { ...base };
+  for (const k of Object.keys(over)) {
+    out[k] = isObj(base[k]) && isObj(over[k]) ? deepMerge(base[k], over[k]) : over[k];
+  }
+  return out;
+}
+
+const y = deepMerge(readYaml(DEF_FILE, true), readYaml(USER_FILE, false));
 
 const num = (v, d) => (v === undefined || v === null || v === '' || Number.isNaN(Number(v)) ? d : Number(v));
 const bool = (v, d) => (v === undefined || v === null ? d : v === true || v === 'true' || v === '1' || v === 1);

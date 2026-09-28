@@ -3,3 +3,6 @@ data.db
 data.db-*
 *.log
 public/ruffle/*.gz
+
+# 本机配置(覆盖 def_config)不入库；def_config/ 为默认值,照常提交
+config/*.yaml

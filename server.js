@@ -11,7 +11,7 @@ import { config } from './config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = config.port;
-// HTTPS(反向代理)部署时在 config.yaml 设 secureCookie: true，让会话 cookie 带上 Secure。
+// HTTPS(反向代理)部署时在 config/config.yaml 设 secureCookie: true，让会话 cookie 带上 Secure。
 const SECURE_COOKIE = config.secureCookie;
 const SESSION_DAYS = config.sessionDays;
 const USER_RE = new RegExp(`^[A-Za-z0-9_\u4e00-\u9fa5]{${config.usernameMin},${config.usernameMax}}$`);
@@ -113,7 +113,7 @@ function authRequired(req, res, next) {
   req.user = u;
   next();
 }
-// 简单内存限流：同一 IP 在 config.yaml 设定的时间窗内 login/register 尝试上限
+// 简单内存限流：同一 IP 在 config/config.yaml 设定的时间窗内 login/register 尝试上限
 const attempts = new Map();
 const RATE_WINDOW_MS = config.rateWindowMinutes * 60000;
 function rateLimit(req, res, next) {

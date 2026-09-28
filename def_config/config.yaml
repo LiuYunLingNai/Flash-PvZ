@@ -1,7 +1,8 @@
-# 植物大战僵尸在线版 —— 配置文件
-# 改完保存后需重启服务器生效：先停掉再 `pnpm start`。
-# 说明：同名环境变量优先级更高（PORT / SECURE_COOKIE / DB_PATH），方便部署时临时覆盖。
-
+# 植物大战僵尸在线版 —— 默认配置（reference / defaults）
+# 这个文件是「出厂默认值」，请勿在此修改。要自定义，把本文件复制到
+#   config/config.yaml  再改那份（config/ 已 gitignore，不会被 git pull 覆盖，也不入库）。
+# 加载优先级：环境变量 > config/config.yaml > def_config/config.yaml（本文件）。
+# 改完需重启服务器生效。同名环境变量最高优先（PORT / SECURE_COOKIE / DB_PATH）。
 # 服务器监听端口
 port: 8123
 

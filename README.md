@@ -74,3 +74,15 @@ SWF 用设备字体“Microsoft YaHei”画中文，Ruffle 自带字体无中文
 - 默认注入 `public/fonts/msyh-face0.ttf`（从系统雅黑 TTC 抽出的单一 TTF）。
 - 或访问 `?renderer=canvas` 改用 canvas 渲染器，直接用系统字体。
 若字偏上/偏下，调 `public/data.xml` 里的 `<fontcn><offsetY>`。
+
+## 手机上拖影 / 图片缺失
+
+现象是画面残留拖影、部分贴图不显示——这不是网络或素材问题，而是 Ruffle 默认的
+GPU 渲染后端（WebGPU/WebGL）在个别手机 GPU/浏览器上有 bug，加上手机 GPU 的最大
+贴图尺寸较小，大图集上传失败就“缺图”。用 `renderer` 查询参数切换图形后端即可：
+
+- `?renderer=webgl` —— 强制 WebGL，跳过较新、手机上易出问题的 WebGPU，仍有 GPU 加速（先试这个）。
+- `?renderer=canvas` —— 强制 2D canvas 渲染器，最高兼容，基本能消除拖影和缺图，但较慢。
+
+页面左下角的提示里也放了这两个可点的切换链接，手机上直接点即可。
+

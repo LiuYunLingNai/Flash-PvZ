@@ -51,9 +51,11 @@
   // 中文渲染说明见项目 README：SWF 用设备字体 "Microsoft YaHei" 画中文，
   // Ruffle 自带字体无 CJK 字形，需注入或改用 canvas 渲染器。
   // renderer 查询参数控制“图形渲染后端”，用来修手机上的拖影 / 贴图缺失：
-  //   (默认) Ruffle 自动选 WebGPU→WebGL→canvas；桌面通常没问题。
-  //   webgl  强制 WebGL：跳过较新、部分手机 GPU 上会拖影的 WebGPU，仍保留 GPU 加速（首选先试）。
-  //   canvas 强制 2D canvas：最高兼容，基本能消除手机拖影和大贴图缺失，但较慢；中文也改用系统字体。
+  //   (默认)     Ruffle 自动选 WebGPU→WebGL2(wgpu-webgl)→canvas；桌面通常没问题。
+  //   wgpu-webgl 强制走 WebGL2：跳过较新、部分手机 GPU 上会拖影的 WebGPU，仍是 GPU 加速（首选先试）。
+  //   canvas     强制 2D canvas：最高兼容，基本能消除手机拖影和大贴图缺失，但较慢；中文也改用系统字体。
+  //   webgpu / webgl 也可显式指定；注意裸 "webgl" 是已弃用的旧 WebGL1 后端，很多设备上直接黑屏，别用它。
+  const RENDERERS = ["canvas", "webgl", "webgpu", "wgpu-webgl"];
   const renderer = new URLSearchParams(location.search).get("renderer");
   const useCanvas = renderer === "canvas";
   const CN_FONT = "fonts/msyh-face0.ttf";
@@ -72,14 +74,14 @@
       unmuteOverlay: "visible", contextMenu: "on",
       defaultFonts: { sans: [CN_NAME], serif: [CN_NAME], typewriter: [CN_NAME] },
     };
-    if (renderer === "canvas" || renderer === "webgl" || renderer === "webgpu")
+    if (RENDERERS.includes(renderer))
       config.preferredRenderer = renderer;                 // 强制指定图形后端
     if (useCanvas) config.deviceFontRenderer = "canvas";   // canvas 后端下用系统字体画中文
     else config.fontSources = [CN_FONT];
     player.load(config);
     document.getElementById("hint").innerHTML =
       `渲染器=${renderer || "自动"} · 手机拖影/缺图试 ` +
-      `<a href="?renderer=webgl">webgl</a> 或 <a href="?renderer=canvas">canvas</a>` +
+      `<a href="?renderer=wgpu-webgl">wgpu-webgl</a> 或 <a href="?renderer=canvas">canvas</a>` +
       (renderer ? ' · <a href="?">默认</a>' : '');
   }
 

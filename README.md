@@ -26,14 +26,31 @@ pnpm start            # 默认 http://127.0.0.1:8123
 
 浏览器打开 http://127.0.0.1:8123 ，注册账号即可游玩。
 
+## 配置
+
+可调参数集中在根目录的 `config.yaml`，改完**重启服务器**生效：
+
+| 配置项 | 说明 | 默认 |
+|---|---|---|
+| `port` | 监听端口 | 8123 |
+| `secureCookie` | HTTPS 部署时设 `true`，会话 cookie 带 Secure | false |
+| `dbPath` | 数据库文件路径（相对根目录或绝对路径） | data.db |
+| `sessionDays` | 登录会话保留天数 | 30 |
+| `username.minLength` / `maxLength` | 用户名长度 | 2 / 20 |
+| `password.minLength` / `maxLength` | 密码长度 | 6 / 200 |
+| `rateLimit.maxAttempts` / `windowMinutes` | 同一 IP 时间窗内登录/注册次数上限 | 50 / 15 |
+| `saveMaxKb` | 单次存档上传体积上限（KB） | 1000 |
+
+环境变量 `PORT` / `SECURE_COOKIE` / `DB_PATH` 优先级高于 `config.yaml`，方便部署时临时覆盖。
+
 ## 部署到公网
 
 需要一台能长期跑进程的机器（VPS / Fly.io / Render 等）。
 
 1. 上传代码，`pnpm install --prod`，`pnpm start`（用 pm2 或 systemd 守护）。
 2. **必须挂 HTTPS**：账号密码是明文提交的，务必在前面放 Nginx/Caddy 反代做 TLS，
-   并设环境变量 `SECURE_COOKIE=1` 让会话 cookie 带 Secure。
-3. 端口用 `PORT` 环境变量调整（反代通常指向内网端口）。
+   并在 `config.yaml` 里设 `secureCookie: true`（或环境变量 `SECURE_COOKIE=1`）让会话 cookie 带 Secure。
+3. 端口在 `config.yaml` 的 `port` 调整（或用 `PORT` 环境变量，反代通常指向内网端口）。
 4. 固定域名很重要：Ruffle 的存档 key 与访问来源(origin)绑定，域名变了旧 key 对不上。
 
 ## 存档原理

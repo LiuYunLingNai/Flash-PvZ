@@ -1,13 +1,10 @@
 // SQLite 存储层。用 Node 24 内置的 node:sqlite，无需任何原生编译。
 import { DatabaseSync } from 'node:sqlite';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { config } from './config.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// 数据库文件放在项目根目录，不在 public/ 下 —— 绝不会被静态服务暴露出去。
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'data.db');
-
-export const db = new DatabaseSync(DB_PATH);
+// 数据库文件路径由 config.yaml 的 dbPath 决定（默认项目根目录 data.db），
+// 放在 public/ 之外 —— 绝不会被静态服务暴露出去。
+export const db = new DatabaseSync(config.dbPath);
 
 export function initDb() {
   db.exec(`

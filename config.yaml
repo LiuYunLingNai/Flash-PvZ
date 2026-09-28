@@ -1,0 +1,33 @@
+# 植物大战僵尸在线版 —— 配置文件
+# 改完保存后需重启服务器生效：先停掉再 `pnpm start`。
+# 说明：同名环境变量优先级更高（PORT / SECURE_COOKIE / DB_PATH），方便部署时临时覆盖。
+
+# 服务器监听端口
+port: 8123
+
+# 部署在 HTTPS 反向代理后面时设为 true（让会话 cookie 带上 Secure 标记）
+secureCookie: false
+
+# 数据库文件路径（相对项目根目录，也可写绝对路径）。放在 public/ 之外，不会被网页访问到。
+dbPath: data.db
+
+# 登录会话保留天数（多少天内免重新登录）
+sessionDays: 30
+
+# 用户名规则（字符集固定为 字母/数字/下划线/中文，这里只调长度）
+username:
+  minLength: 2
+  maxLength: 20
+
+# 密码长度限制
+password:
+  minLength: 6
+  maxLength: 200
+
+# 登录/注册限流：同一 IP 在 windowMinutes 分钟内最多尝试 maxAttempts 次
+rateLimit:
+  maxAttempts: 50
+  windowMinutes: 15
+
+# 单次存档上传体积上限（KB）。存档过大会被拒绝，防止滥用。
+saveMaxKb: 1000

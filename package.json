@@ -1,0 +1,16 @@
+{
+  "name": "pvz-online",
+  "version": "1.0.0",
+  "description": "植物大战僵尸 Flash 汉化版 · 带账号与云存档的在线版",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

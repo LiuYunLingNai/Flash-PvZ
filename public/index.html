@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>植物大战僵尸 · 在线版</title>
+<link rel="stylesheet" href="auth.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #stage { width: 100vw; height: 100vh; }
+  #hint { position: fixed; left: 8px; bottom: 6px; z-index: 9;
+          color: #888; font: 12px/1.5 sans-serif; pointer-events: none; }
+  #hint a { color: #6cf; pointer-events: auto; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hint"></div>
+
+<!-- 顶栏：登录后显示当前玩家 / 存档状态 / 退出 -->
+<div id="topbar" hidden>
+  <span>玩家：<b id="who"></b></span>
+  <span class="spacer"></span>
+  <span id="sync-status"></span>
+  <button id="logout">退出登录</button>
+</div>
+
+<!-- 登录 / 注册遮罩 -->
+<div id="auth-overlay" hidden>
+  <div id="auth-card">
+    <h1>植物大战僵尸</h1>
+    <p class="sub">登录后进度自动云端保存，换设备也能接着玩</p>
+    <form id="auth-form" autocomplete="on">
+      <label for="u">用户名（2-20 位，支持中文）</label>
+      <input id="u" name="username" maxlength="20" autocomplete="username" required>
+      <label for="p">密码（至少 6 位）</label>
+      <input id="p" name="password" type="password" maxlength="200" autocomplete="current-password" required>
+      <div class="auth-actions">
+        <button class="primary" id="btn-login" type="submit">登录</button>
+        <button class="secondary" id="btn-register" type="button">注册新账号</button>
+      </div>
+    </form>
+    <p class="tip">第一次玩？点“注册新账号”创建账号；已有账号请点“登录”。</p>
+    <div id="auth-msg"></div>
+    <div id="guest-link"><a id="guest">游客试玩（进度只存本机）</a></div>
+  </div>
+</div>
+
+<script>
+  // ===== 游戏启动逻辑（Ruffle + 中文字体），由 auth.js 在存档就绪后调用 =====
+  // 中文渲染说明见项目 README：SWF 用设备字体 "Microsoft YaHei" 画中文，
+  // Ruffle 自带字体无 CJK 字形，需注入或改用 canvas 渲染器。
+  const useCanvas = new URLSearchParams(location.search).get("renderer") === "canvas";
+  const CN_FONT = "fonts/msyh-face0.ttf";
+  const CN_NAME = "Microsoft YaHei";
+
+  function bootRuffle() {
+    const player = window.RufflePlayer.newest().createPlayer();
+    document.getElementById("stage").appendChild(player);
+    player.style.width = "100%";
+    player.style.height = "100%";
+    const config = {
+      url: "plants-vs-zombies.swf",
+      allowNetworking: "all",
+      allowScriptAccess: false,
+      letterbox: "on", scale: "showAll", autoplay: "on",
+      unmuteOverlay: "visible", contextMenu: "on",
+      defaultFonts: { sans: [CN_NAME], serif: [CN_NAME], typewriter: [CN_NAME] },
+    };
+    if (useCanvas) config.deviceFontRenderer = "canvas";
+    else config.fontSources = [CN_FONT];
+    player.load(config);
+    document.getElementById("hint").innerHTML = useCanvas
+      ? '中文=canvas 渲染器 · <a href="?">切回注入字体</a>'
+      : '中文=注入字体 · <a href="?renderer=canvas">切到 canvas 渲染器</a>';
+  }
+
+  function loadScript(src, ok, fail) {
+    const s = document.createElement("script");
+    s.src = src; s.onload = ok; s.onerror = fail;
+    document.head.appendChild(s);
+  }
+
+  // auth.js 调这个来真正开始游戏
+  window.PvZ = {
+    _started: false,
+    start() {
+      if (this._started) return;        // 防止重复点击/多次调用叠加出多个游戏实例
+      this._started = true;
+      loadScript("ruffle/ruffle.js", bootRuffle, () => {
+        loadScript("https://unpkg.com/@ruffle-rs/ruffle", bootRuffle, () => {
+          document.getElementById("hint").textContent = "加载 Ruffle 失败";
+        });
+      });
+    }
+  };
+</script>
+<script src="auth.js"></script>
+</body>
+</html>

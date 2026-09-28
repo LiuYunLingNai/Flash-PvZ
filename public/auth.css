@@ -1,0 +1,57 @@
+/* 登录遮罩 + 顶栏样式 */
+
+/* 关键修复：#auth-overlay / #topbar 带 display:flex，会盖过浏览器默认的
+   [hidden]{display:none}，导致 JS 里 el.hidden=true 根本隐藏不了元素，
+   游戏会被登录框挡在后面。这里强制让 hidden 属性真正生效。 */
+[hidden] { display: none !important; }
+
+#auth-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 30%, #2f4a1e, #14230c 70%);
+  font-family: "Microsoft YaHei", sans-serif;
+}
+#auth-card {
+  width: 320px; max-width: 90vw; padding: 28px 26px 22px;
+  background: #fffdf3; border: 3px solid #7a4a1e; border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+#auth-card h1 { margin: 0 0 4px; font-size: 20px; color: #3c6314; text-align: center; }
+#auth-card .sub { margin: 0 0 18px; font-size: 12px; color: #8a7a55; text-align: center; }
+#auth-card label { display: block; font-size: 12px; color: #5a4a2a; margin: 10px 0 4px; }
+#auth-card input {
+  width: 100%; box-sizing: border-box; padding: 9px 10px;
+  border: 2px solid #c9b98a; border-radius: 8px; font-size: 14px; background: #fff;
+}
+#auth-card input:focus { outline: none; border-color: #6ab04c; }
+.auth-actions { display: flex; gap: 10px; margin-top: 16px; }
+.auth-actions button {
+  flex: 1; padding: 11px 6px; cursor: pointer; border-radius: 8px;
+  font-size: 15px; font-weight: 700; letter-spacing: 1px; border: none;
+}
+#auth-card button.primary { background: #6ab04c; color: #fff; }
+#auth-card button.primary:hover { background: #5a9e3e; }
+#auth-card button.secondary {
+  background: #fff; color: #3c6314; border: 2px solid #6ab04c;
+}
+#auth-card button.secondary:hover { background: #eef7e6; }
+.auth-actions button:disabled { background: #b7c9ab; color: #fff; border-color: #b7c9ab; cursor: default; }
+#auth-card .tip { margin: 12px 0 0; font-size: 12px; color: #8a7a55; text-align: center; line-height: 1.6; }
+#guest-link a { color: #3c8f14; cursor: pointer; text-decoration: underline; }
+#auth-msg { min-height: 16px; margin-top: 10px; font-size: 12px; color: #c0392b; text-align: center; }
+#guest-link { margin-top: 8px; font-size: 12px; text-align: center; color: #999; }
+
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  display: flex; align-items: center; gap: 12px; padding: 6px 12px;
+  background: rgba(20,35,12,.82); color: #dfe8cf;
+  font: 13px/1.4 "Microsoft YaHei", sans-serif; backdrop-filter: blur(3px);
+}
+#topbar b { color: #a6e04c; }
+#topbar .spacer { flex: 1; }
+#topbar #sync-status { font-size: 12px; color: #9fb488; }
+#topbar button {
+  padding: 4px 12px; cursor: pointer; background: #4a6b28; color: #fff;
+  border: none; border-radius: 6px; font-size: 12px;
+}
+#topbar button:hover { background: #5a7e34; }

@@ -40,8 +40,13 @@
     return o;
   }
   function restore(data) {
+    const host = location.hostname;   // 当前域名/IP（不含端口）
     for (const k in data) {
-      try { localStorage.setItem(k, data[k]); } catch (e) {}
+      // Ruffle 的存档键格式是 "主机名/SWF路径/存档名"，开头带的是存档时的主机名。
+      // 把它换成当前域名，云存档就跟域名解耦——换域名/换端口登录后也能接上进度。
+      const slash = k.indexOf("/");
+      const key = slash > -1 ? host + k.slice(slash) : k;
+      try { localStorage.setItem(key, data[k]); } catch (e) {}
     }
   }
   function setSync(t) { const el = $("#sync-status"); if (el) el.textContent = t; }

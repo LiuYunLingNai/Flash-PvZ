@@ -4,5 +4,5 @@ data.db-*
 *.log
 public/ruffle/*.gz
 
-# 本机配置(覆盖 def_config)不入库；def_config/ 为默认值,照常提交
-config/*.yaml
+# 本机配置 config.yaml 不入库；default_config.yaml 为默认值，随代码提交
+config/config.yaml

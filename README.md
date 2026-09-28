@@ -7,9 +7,10 @@ Node + SQLite 后端：每个玩家注册账号后，游戏进度自动同步到
 
 ```
 server.js          Express 服务器：托管游戏 + 账号/存档 API
-config.js          配置加载：def_config 默认值 + config 本机覆盖 + 环境变量
-def_config/        出厂默认配置（config.yaml，随代码更新，勿改）
-config/            本机配置覆盖（config.yaml 已 gitignore，改这份）
+config.js          配置加载：default_config 默认值 + config.yaml 本机覆盖 + 环境变量
+config/            配置目录
+  default_config.yaml  出厂默认（随代码更新，勿改）
+  config.yaml          本机配置（首次启动自动生成，已 gitignore，改这份）
 db.js              SQLite 存储层（用 Node 内置 node:sqlite，无需编译）
 data.db            运行时自动生成，含用户与存档（已 gitignore，勿公开）
 public/            对外暴露的静态文件（唯一 web 根目录）
@@ -31,11 +32,12 @@ pnpm start            # 默认 http://127.0.0.1:8123
 
 ## 配置
 
-配置分两层，加载优先级 **环境变量 > `config/config.yaml` > `def_config/config.yaml`**：
+配置放在 `config/`，加载优先级 **环境变量 > `config/config.yaml` > `config/default_config.yaml`**：
 
-- `def_config/config.yaml` —— 出厂默认值（含所有键和注释），**别改这个**，它随代码更新。
-- `config/config.yaml` —— 你的本机覆盖，把上面那份复制过来只留要改的键即可（没写的自动沿用默认）。
-  该目录下 `*.yaml` 已 gitignore，改动不入库、`git pull` 也不会覆盖你的部署配置。
+- `config/default_config.yaml` —— 出厂默认值（含所有键和注释），**别改这个**，它随代码更新。
+- `config/config.yaml` —— 你的本机配置，**首次启动自动从默认值复制生成**；以后默认值里
+  新增的项也会自动补进这份（保留注释、不覆盖你已改的值）。已 gitignore，改动不入库、
+  `git pull` 也不会覆盖你的部署配置。只改你要改的键即可。
 
 改完**重启服务器**生效。可调项如下：
 

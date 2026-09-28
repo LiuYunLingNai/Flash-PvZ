@@ -41,12 +41,25 @@
 #auth-msg { min-height: 16px; margin-top: 10px; font-size: 12px; color: #c0392b; text-align: center; }
 #guest-link { margin-top: 8px; font-size: 12px; text-align: center; color: #999; }
 
+/* 顶栏默认滑到屏幕上方之外，不遮挡游戏；把指针移到右上角把手（或点它）才滑下来。 */
 #topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 20;
-  display: flex; align-items: center; gap: 12px; padding: 6px 12px;
+  display: flex; align-items: center; gap: 12px; padding: 6px 46px 6px 12px;
   background: rgba(20,35,12,.82); color: #dfe8cf;
   font: 13px/1.4 "Microsoft YaHei", sans-serif; backdrop-filter: blur(3px);
+  transform: translateY(-100%); transition: transform .25s ease;
 }
+#topbar.open, #topbar:hover, #topbar-toggle:hover ~ #topbar { transform: none; }
+
+/* 右上角把手：收起时只露一个半透明小箭头，几乎不挡画面 */
+#topbar-toggle {
+  position: fixed; top: 0; right: 10px; z-index: 21;
+  padding: 1px 10px 4px; border: none; border-radius: 0 0 9px 9px;
+  background: rgba(20,35,12,.55); color: #cfe0b8; cursor: pointer;
+  font: 13px/1 "Microsoft YaHei", sans-serif; -webkit-tap-highlight-color: transparent;
+}
+#topbar-toggle:hover { background: rgba(20,35,12,.85); }
+
 #topbar b { color: #a6e04c; }
 #topbar .spacer { flex: 1; }
 #topbar #sync-status { font-size: 12px; color: #9fb488; }

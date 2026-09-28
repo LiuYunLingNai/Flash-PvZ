@@ -6,6 +6,7 @@
   const $ = (s) => document.querySelector(s);
   const overlay = $("#auth-overlay");
   const topbar = $("#topbar");
+  const toggle = $("#topbar-toggle");
   const form = $("#auth-form");
   const msg = $("#auth-msg");
   const btnLogin = $("#btn-login");
@@ -13,6 +14,15 @@
 
   let syncTimer = null;
   let lastPushed = "";            // 上次上传的快照，避免无变化时重复上传
+  let peekTimer = null;           // 进游戏时顶栏短暂露一下再收起的定时器
+
+  // 顶栏默认收起（不挡游戏），点右上角把手展开/收起。
+  function setBar(open) {
+    clearTimeout(peekTimer);
+    topbar.classList.toggle("open", open);
+    toggle.textContent = open ? "▴" : "▾";
+  }
+
 
   async function api(path, opts = {}) {
     const ctrl = new AbortController();
@@ -79,6 +89,10 @@
   async function enterGame(username, isGuest) {
     overlay.hidden = true;
     topbar.hidden = false;
+    toggle.hidden = false;
+    // 进游戏时先把顶栏露一下（让玩家看到自己是谁 / 存档状态），3 秒后自动收起不挡画面。
+    setBar(true);
+    peekTimer = setTimeout(() => setBar(false), 3000);
     $("#who").textContent = username;
     localStorage.clear();      // 换账号时先清本机残留存档，避免串号
     lastPushed = "";
@@ -124,6 +138,9 @@
 
   form.addEventListener("submit", (e) => { e.preventDefault(); doAuth("login"); });
   btnRegister.addEventListener("click", () => doAuth("register"));
+
+  // 点右上角把手展开/收起顶栏（收起后几乎不挡游戏画面）。
+  toggle.onclick = () => setBar(!topbar.classList.contains("open"));
 
   $("#guest").onclick = () => enterGame("游客（本地）", true);
 

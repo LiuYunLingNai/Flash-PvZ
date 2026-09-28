@@ -17,7 +17,9 @@
 <div id="stage"></div>
 <div id="hint"></div>
 
-<!-- 顶栏：登录后显示当前玩家 / 存档状态 / 退出 -->
+<!-- 顶栏：登录后显示当前玩家 / 存档状态 / 退出。默认收起，避免遮挡游戏；
+     点右上角把手（或桌面端移上去）展开。 -->
+<button id="topbar-toggle" hidden title="账号 / 存档" aria-label="账号 / 存档">▾</button>
 <div id="topbar" hidden>
   <span>玩家：<b id="who"></b></span>
   <span class="spacer"></span>
